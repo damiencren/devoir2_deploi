@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "AzureTP2", "AzureTP2\AzureTP2.deployproj", "{11FDF2B0-2BD3-4E28-BB06-6E9A10CFEFA6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{11FDF2B0-2BD3-4E28-BB06-6E9A10CFEFA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11FDF2B0-2BD3-4E28-BB06-6E9A10CFEFA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11FDF2B0-2BD3-4E28-BB06-6E9A10CFEFA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11FDF2B0-2BD3-4E28-BB06-6E9A10CFEFA6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6E4F57F7-1EC4-48EC-9195-13433BB96E52}
+	EndGlobalSection
+EndGlobal
