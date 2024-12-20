@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "storageConnectionString": {
-            "value": "[parameters('storageConnectionString')]"
+            "value": "connectionString"
         },
         "subscriptionId": {
             "value": "1dba5540-2771-4f4f-9434-9f0150a9c88f"
