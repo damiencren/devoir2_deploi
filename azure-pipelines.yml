@@ -52,7 +52,7 @@ steps:
     inlineScript: |
       az functionapp config appsettings set `
         --resource-group 'DACR-RG' `
-        --name 'DACR-FunctionTrigger' `
+        --name 'DACR-DACR-FunctionTrigger' `
         --settings storageConnectionString=$(storageConnectionString)
                    #AzureWebJobsStorage=$(AzureWebJobsStorage) `
 
