@@ -27,15 +27,16 @@ steps:
       Write-Host "##vso[task.setvariable variable=storageConnectionString]$connectionString"
       Write-Host "Storage Connection String: $connectionString"
 
+# Étape 3 : Déployer le Service Bus
+
+# Étape 4 : Récupérer la chaîne de connexion Service Bus
+
 # Deploy le Azure Function
 - task: AzureResourceManagerTemplateDeployment@3
   inputs:
-    deploymentScope: 'Resource Group'
     azureResourceManagerConnection: 'Azure subscription 1(1dba5540-2771-4f4f-9434-9f0150a9c88f)'
-    subscriptionId: '1dba5540-2771-4f4f-9434-9f0150a9c88f'
-    action: 'Create Or Update Resource Group'
     resourceGroupName: 'DACR-RG'
-    location: 'Canada Central'
+    location: 'canadacentral'
     templateLocation: 'Linked artifact'
     csmFile: '$(Build.SourcesDirectory)\AzureTP2\azuredeployFunctionTrigger.json'
     csmParametersFile: '$(Build.SourcesDirectory)\AzureTP2\azuredeployFunctionTrigger.parameters.json'
@@ -43,17 +44,17 @@ steps:
     #overrideParameters: |
     #  storageConnectionString=$(storageConnectionString)
 
-#- task: AzureCLI@2
-#  displayName: 'Configurer les variables d’application'
-#  inputs:
-#    azureSubscription: 'Azure subscription 1(1dba5540-2771-4f4f-9434-9f0150a9c88f)'
-#    scriptType: 'ps'
-#    scriptLocation: 'inlineScript'
-#    inlineScript: |
-#      az functionapp config appsettings set `
-#        --resource-group 'DACR-RG' `
-#        --name 'DACR-FunctionTrigger' `
-#        --settings storageConnectionString=$(storageConnectionString)
+- task: AzureCLI@2
+  displayName: 'Configurer les variables d’application'
+  inputs:
+    azureSubscription: 'Azure subscription 1(1dba5540-2771-4f4f-9434-9f0150a9c88f)'
+    scriptType: 'ps'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az functionapp config appsettings set `
+        --resource-group 'DACR-RG' `
+        --name 'DACR-FunctionTrigger' `
+        --settings storageConnectionString=$(storageConnectionString)
                    #AzureWebJobsStorage=$(AzureWebJobsStorage) `
 
 # Étape 7 : Installer le SDK .NET 8.x
