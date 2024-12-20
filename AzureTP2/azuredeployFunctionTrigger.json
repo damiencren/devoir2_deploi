@@ -1,203 +1,142 @@
 {
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    // URL du schéma JSON pour valider la structure de ce fichier ARM Template
     "contentVersion": "1.0.0.0",
+    // Version du contenu pour le contrôle des versions de ce template
+
     "parameters": {
+        // Définition des paramètres requis pour déployer les ressources
+
         "subscriptionId": {
             "type": "string"
+            // Identifiant de la souscription Azure
         },
         "name": {
             "type": "string"
+            // Nom de l'application Azure Functions
         },
         "location": {
-            "type": "string"
-        },
-        "use32BitWorkerProcess": {
-            "type": "bool"
-        },
-        "ftpsState": {
-            "type": "string"
+            "type": "string",
+            "defaultValue": "canadacentral"
+            // Région Azure pour déployer les ressources (par défaut, Canada Central)
         },
         "storageAccountName": {
             "type": "string"
+            // Nom du compte de stockage Azure
         },
-        "netFrameworkVersion": {
-            "type": "string"
+        "containerName": {
+            "type": "string",
+            "defaultValue": "images"
+            // Nom du conteneur dans le compte de stockage (par défaut, "images")
         },
-        "sku": {
+        "serviceBusConnectionString": {
             "type": "string"
-        },
-        "skuCode": {
-            "type": "string"
-        },
-        "workerSize": {
-            "type": "string"
-        },
-        "workerSizeId": {
-            "type": "string"
-        },
-        "numberOfWorkers": {
-            "type": "string"
+            // Chaîne de connexion pour Azure Service Bus
         },
         "hostingPlanName": {
             "type": "string"
+            // Nom du plan d'hébergement (App Service Plan)
         },
         "serverFarmResourceGroup": {
             "type": "string"
+            // Nom du groupe de ressources pour le plan d'hébergement
         },
-        "alwaysOn": {
-            "type": "bool"
+        "sku": {
+            "type": "string",
+            "defaultValue": "Dynamic"
+            // Type de tarification pour le plan d'hébergement (par défaut, "Dynamic" pour le consommateur)
+        },
+        "skuCode": {
+            "type": "string",
+            "defaultValue": "Y1"
+            // Code SKU pour le plan d'hébergement (par défaut, Y1 pour le consommateur)
         }
     },
+
     "variables": {
-        "contentShare": "dacr-functionapp91ab"
+        // Définition des variables utilisées dans le template
+        "contentShare": "[concat(parameters('name'), 'content')]"
+        // Génère un nom unique pour le partage de contenu basé sur le nom de l'application
     },
+
     "resources": [
+        // Liste des ressources à créer ou à gérer
+
         {
-            "apiVersion": "2022-03-01",
-            "name": "[parameters('name')]",
             "type": "Microsoft.Web/sites",
-            "kind": "functionapp",
+            // Type de ressource : application Azure Functions
+            "apiVersion": "2022-03-01",
+            // Version de l'API pour interagir avec cette ressource
+            "name": "[parameters('name')]",
+            // Nom de la fonction Azure (paramètre fourni)
             "location": "[parameters('location')]",
-            "tags": {
-                "hidden-link: /app-insights-resource-id": "/subscriptions/1dba5540-2771-4f4f-9434-9f0150a9c88f/resourceGroups/DACR-RG/providers/Microsoft.Insights/components/DACR-FunctionApp"
-            },
+            // Région où l'application sera déployée
+            "kind": "functionapp",
+            // Type de service, ici une fonction Azure
             "dependsOn": [
-                "microsoft.insights/components/DACR-FunctionApp",
                 "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]"
+                // Dépendance : cette ressource nécessite un plan d'hébergement
             ],
             "properties": {
-                "name": "[parameters('name')]",
+                "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+                // Référence au plan d'hébergement existant ou créé
                 "siteConfig": {
+                    // Configuration spécifique de l'application
                     "appSettings": [
+                        // Paramètres d'application
                         {
                             "name": "FUNCTIONS_EXTENSION_VERSION",
                             "value": "~4"
+                            // Version des extensions Azure Functions (ici v4)
                         },
                         {
                             "name": "FUNCTIONS_WORKER_RUNTIME",
                             "value": "dotnet-isolated"
-                        },
-                        {
-                            "name": "WEBSITE_USE_PLACEHOLDER_DOTNETISOLATED",
-                            "value": "1"
-                        },
-                        {
-                            "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
-                            "value": "[reference('microsoft.insights/components/DACR-FunctionApp', '2015-05-01').ConnectionString]"
+                            // Runtime utilisé (ici .NET Isolated Process)
                         },
                         {
                             "name": "AzureWebJobsStorage",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(resourceId('1dba5540-2771-4f4f-9434-9f0150a9c88f','DACR-RG','Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2019-06-01').keys[0].value,';EndpointSuffix=','core.windows.net')]"
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2019-06-01').keys[0].value, ';EndpointSuffix=core.windows.net')]"
+                            // Chaîne de connexion au compte de stockage Azure
                         },
                         {
-                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(resourceId('1dba5540-2771-4f4f-9434-9f0150a9c88f','DACR-RG','Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2019-06-01').keys[0].value,';EndpointSuffix=','core.windows.net')]"
+                            "name": "ServiceBusConnectionString",
+                            "value": "[parameters('serviceBusConnectionString')]"
+                            // Chaîne de connexion pour Azure Service Bus
                         },
                         {
-                            "name": "WEBSITE_CONTENTSHARE",
-                            "value": "[variables('contentShare')]"
+                            "name": "WEBSITE_RUN_FROM_PACKAGE",
+                            "value": "1"
+                            // Spécifie que l'application s'exécute depuis un package déployé
                         }
-                    ],
-                    "cors": {
-                        "allowedOrigins": [
-                            "https://portal.azure.com"
-                        ]
-                    },
-                    "use32BitWorkerProcess": "[parameters('use32BitWorkerProcess')]",
-                    "ftpsState": "[parameters('ftpsState')]",
-                    "netFrameworkVersion": "[parameters('netFrameworkVersion')]"
-                },
-                "clientAffinityEnabled": false,
-                "virtualNetworkSubnetId": null,
-                "functionsRuntimeAdminIsolationEnabled": false,
-                "publicNetworkAccess": "Enabled",
-                "httpsOnly": true,
-                "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]"
-            },
-            "resources": [
-                {
-                    "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
-                    "apiVersion": "2022-09-01",
-                    "name": "[concat(parameters('name'), '/scm')]",
-                    "properties": {
-                        "allow": false
-                    },
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Web/Sites', parameters('name'))]"
                     ]
                 },
-                {
-                    "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
-                    "apiVersion": "2022-09-01",
-                    "name": "[concat(parameters('name'), '/ftp')]",
-                    "properties": {
-                        "allow": false
-                    },
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Web/Sites', parameters('name'))]"
-                    ]
-                }
-            ]
+                "httpsOnly": true
+                // Force l'utilisation du HTTPS pour l'application
+            }
         },
         {
-            "apiVersion": "2018-11-01",
-            "name": "[parameters('hostingPlanName')]",
             "type": "Microsoft.Web/serverfarms",
+            // Type de ressource : plan d'hébergement App Service
+            "apiVersion": "2018-11-01",
+            // Version de l'API pour le plan d'hébergement
+            "name": "[parameters('hostingPlanName')]",
+            // Nom du plan d'hébergement
             "location": "[parameters('location')]",
-            "kind": "",
-            "tags": {},
-            "dependsOn": [],
+            // Région où le plan d'hébergement sera créé
             "properties": {
                 "name": "[parameters('hostingPlanName')]",
-                "workerSize": "[parameters('workerSize')]",
-                "workerSizeId": "[parameters('workerSizeId')]",
-                "numberOfWorkers": "[parameters('numberOfWorkers')]"
+                // Nom du plan d'hébergement
+                "workerSize": "0",
+                // Taille des workers (0 = plus petite taille disponible)
+                "numberOfWorkers": "1"
+                // Nombre de workers alloués au plan (ici, 1)
             },
             "sku": {
                 "Tier": "[parameters('sku')]",
+                // Niveau de tarification (ex. Dynamic pour le consommateur)
                 "Name": "[parameters('skuCode')]"
-            }
-        },
-        {
-            "apiVersion": "2020-02-02-preview",
-            "name": "DACR-FunctionApp",
-            "type": "microsoft.insights/components",
-            "location": "canadacentral",
-            "tags": {},
-            "dependsOn": [
-                "newWorkspaceTemplate"
-            ],
-            "properties": {
-                "ApplicationId": "[parameters('name')]",
-                "Request_Source": "IbizaWebAppExtensionCreate",
-                "Flow_Type": "Redfield",
-                "Application_Type": "web",
-                "WorkspaceResourceId": "/subscriptions/1dba5540-2771-4f4f-9434-9f0150a9c88f/resourceGroups/DefaultResourceGroup-CCAN/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-1dba5540-2771-4f4f-9434-9f0150a9c88f-CCAN"
-            }
-        },
-        {
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2021-04-01",
-            "name": "newWorkspaceTemplate",
-            "resourceGroup": "DefaultResourceGroup-CCAN",
-            "subscriptionId": "[parameters('subscriptionId')]",
-            "properties": {
-                "mode": "Incremental",
-                "template": {
-                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-                    "contentVersion": "1.0.0.0",
-                    "parameters": {},
-                    "variables": {},
-                    "resources": [
-                        {
-                            "apiVersion": "2020-08-01",
-                            "name": "DefaultWorkspace-1dba5540-2771-4f4f-9434-9f0150a9c88f-CCAN",
-                            "type": "Microsoft.OperationalInsights/workspaces",
-                            "location": "canadacentral",
-                            "properties": {}
-                        }
-                    ]
-                }
+                // Code SKU (ex. Y1 pour le consommateur)
             }
         }
     ]
