@@ -190,15 +190,6 @@
                 "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]",
                 "[concat(concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName')), '/blobServices/default')]"
             ]
-        },
-        {
-            "name": "[concat(parameters('storageAccountName'), '/queue')]",
-            "type": "Microsoft.Storage/storageAccounts/queues",
-            "apiVersion": "2023-05-01",
-            "properties": {},
-            "dependsOn": [
-                "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]"
-            ]
         }
     ],
     "outputs": {}
