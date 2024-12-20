@@ -6,7 +6,7 @@
             "value": "1dba5540-2771-4f4f-9434-9f0150a9c88f"
         },
         "name": {
-            "value": "DACR-Functions"
+            "value": "DACR-FunctionApp"
         },
         "location": {
             "value": "Canada Central"
@@ -15,7 +15,7 @@
             "value": "FtpsOnly"
         },
         "storageAccountName": {
-            "value": "dacrrgbb4e"
+            "value": "dcrenstorageaccount"
         },
         "sku": {
             "value": "Dynamic"
@@ -39,7 +39,7 @@
             "value": "v8.0"
         },
         "hostingPlanName": {
-            "value": "ASP-DACRRG-9c91"
+            "value": "ASP-DACRRG-b2da"
         },
         "serverFarmResourceGroup": {
             "value": "DACR-RG"
