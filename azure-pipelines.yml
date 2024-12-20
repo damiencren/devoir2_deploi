@@ -11,7 +11,7 @@ steps:
     subscriptionId: '1dba5540-2771-4f4f-9434-9f0150a9c88f'
     action: 'Create Or Update Resource Group'
     resourceGroupName: 'DACR-RG'
-    location: 'East US'
+    location: 'Canada Central'
     templateLocation: 'Linked artifact'
     csmFile: '$(Build.SourcesDirectory)\AzureTP2\azuredeploy.json'
     csmParametersFile: '$(Build.SourcesDirectory)\AzureTP2\azuredeploy.parameters.json'
@@ -27,9 +27,6 @@ steps:
       Write-Host "##vso[task.setvariable variable=storageConnectionString]$connectionString"
       Write-Host "Storage Connection String: $connectionString"
 
-- script: dir "$(Build.SourcesDirectory)\AzureTP2"
-  displayName: 'List files in AzureTP2 folder'
-
 # Deploy le Azure Function
 - task: AzureResourceManagerTemplateDeployment@3
   inputs:
@@ -38,13 +35,13 @@ steps:
     subscriptionId: '1dba5540-2771-4f4f-9434-9f0150a9c88f'
     action: 'Create Or Update Resource Group'
     resourceGroupName: 'DACR-RG'
-    location: 'East US'
+    location: 'Canada Central'
     templateLocation: 'Linked artifact'
     csmFile: '$(Build.SourcesDirectory)\AzureTP2\azuredeployFunctionTrigger.json'
     csmParametersFile: '$(Build.SourcesDirectory)\AzureTP2\azuredeployFunctionTrigger.parameters.json'
     deploymentMode: 'Incremental'
-    overrideParameters: >
-      storageConnectionString  "$(storageConnectionString )"
+    #overrideParameters: |
+    #  storageConnectionString=$(storageConnectionString)
 
 - task: AzureCLI@2
   displayName: 'Configurer les variables d’application'
