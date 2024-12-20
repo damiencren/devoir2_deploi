@@ -197,7 +197,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
             "name": "newWorkspaceTemplate",
-            "resourceGroup": "DefaultResourceGroup-CCAN",
+            "resourceGroup": "DACR-RG",
             "subscriptionId": "[parameters('subscriptionId')]",
             "properties": {
                 "mode": "Incremental",
