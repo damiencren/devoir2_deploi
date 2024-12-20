@@ -27,9 +27,6 @@ steps:
       Write-Host "##vso[task.setvariable variable=storageConnectionString]$connectionString"
       Write-Host "Storage Connection String: $connectionString"
 
-- script: dir "$(Build.SourcesDirectory)\AzureTP2"
-  displayName: 'List files in AzureTP2 folder'
-
 # Deploy le Azure Function
 - task: AzureResourceManagerTemplateDeployment@3
   inputs:
@@ -43,8 +40,8 @@ steps:
     csmFile: '$(Build.SourcesDirectory)\AzureTP2\azuredeployFunctionTrigger.json'
     csmParametersFile: '$(Build.SourcesDirectory)\AzureTP2\azuredeployFunctionTrigger.parameters.json'
     deploymentMode: 'Incremental'
-    overrideParameters: >
-      storageConnectionString  "$(storageConnectionString )"
+    #overrideParameters: |
+    #  storageConnectionString=$(storageConnectionString)
 
 - task: AzureCLI@2
   displayName: 'Configurer les variables d’application'
