@@ -3,69 +3,72 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "subscriptionId": {
-            "type": "string"
+            "type": "String"
         },
         "name": {
-            "type": "string"
+            "type": "String"
+        },
+        "resourceGroup": {
+            "type": "String"
         },
         "location": {
-            "type": "string"
+            "type": "String"
         },
         "use32BitWorkerProcess": {
-            "type": "bool"
+            "type": "Bool"
         },
         "ftpsState": {
-            "type": "string"
-        },
-        "storageAccountName": {
-            "type": "string"
+            "type": "String"
         },
         "netFrameworkVersion": {
-            "type": "string"
+            "type": "String"
         },
         "sku": {
-            "type": "string"
+            "type": "String"
         },
         "skuCode": {
-            "type": "string"
+            "type": "String"
         },
         "workerSize": {
-            "type": "string"
+            "type": "String"
         },
         "workerSizeId": {
-            "type": "string"
+            "type": "String"
         },
         "numberOfWorkers": {
-            "type": "string"
+            "type": "String"
         },
         "hostingPlanName": {
-            "type": "string"
-        },
-        "serverFarmResourceGroup": {
-            "type": "string"
+            "type": "String"
         },
         "alwaysOn": {
-            "type": "bool"
+            "type": "Bool"
+        },
+        "WorkSpaceName": {
+            "type": "String"
         }
     },
     "variables": {
-        "contentShare": "dacr-functiontriggera9fc"
+        //learn.microsoft.com/en-us/azure/azure-resource-manager/templates/template-functions-string
+        "locationLower": "[toLower(replace(parameters('location'),' ',''))]",
+        "storageAccountName": "[toLower(concat(parameters('name'),parameters('resourceGroup')))]",
+        "contentShare": "gurofunctionappa296"
     },
     "resources": [
         {
+            "type": "Microsoft.Web/sites",
             "apiVersion": "2022-03-01",
             "name": "[parameters('name')]",
-            "type": "Microsoft.Web/sites",
-            "kind": "functionapp",
             "location": "[parameters('location')]",
-            "tags": {
-                "hidden-link: /app-insights-resource-id": "/subscriptions/1dba5540-2771-4f4f-9434-9f0150a9c88f/resourceGroups/DACR-RG/providers/Microsoft.Insights/components/DACR-FunctionTrigger"
-            },
             "dependsOn": [
-                "microsoft.insights/components/DACR-FunctionTrigger",
+                "[concat('microsoft.insights/components/', parameters('name'))]",
                 "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
-                "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]"
+                "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
             ],
+            "tags": {
+                "hidden-link: /app-insights-resource-id": "[concat('/subscriptions/970fcef5-9c23-4f7d-a11b-5a96d104f066/resourceGroups/', parameters('resourceGroup'), '/providers/Microsoft.Insights/components/', parameters('name'))]"
+            },
+            "kind": "functionapp",
             "properties": {
                 "name": "[parameters('name')]",
                 "siteConfig": {
@@ -84,15 +87,15 @@
                         },
                         {
                             "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
-                            "value": "[reference('microsoft.insights/components/DACR-FunctionTrigger', '2015-05-01').ConnectionString]"
+                            "value": "[reference(concat('microsoft.insights/components/', parameters('name')), '2015-05-01').ConnectionString]"
                         },
                         {
                             "name": "AzureWebJobsStorage",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2019-06-01').keys[0].value,';EndpointSuffix=','core.windows.net')]"
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-06-01').keys[0].value,';EndpointSuffix=','core.windows.net')]"
                         },
                         {
                             "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2019-06-01').keys[0].value,';EndpointSuffix=','core.windows.net')]"
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-06-01').keys[0].value,';EndpointSuffix=','core.windows.net')]"
                         },
                         {
                             "name": "WEBSITE_CONTENTSHARE",
@@ -113,75 +116,75 @@
                 "functionsRuntimeAdminIsolationEnabled": false,
                 "publicNetworkAccess": "Enabled",
                 "httpsOnly": true,
-                "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]"
+                "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('resourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]"
             },
             "resources": [
                 {
                     "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
                     "apiVersion": "2022-09-01",
                     "name": "[concat(parameters('name'), '/scm')]",
-                    "properties": {
-                        "allow": false
-                    },
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/Sites', parameters('name'))]"
-                    ]
+                    ],
+                    "properties": {
+                        "allow": true
+                    }
                 },
                 {
                     "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
                     "apiVersion": "2022-09-01",
                     "name": "[concat(parameters('name'), '/ftp')]",
-                    "properties": {
-                        "allow": false
-                    },
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/Sites', parameters('name'))]"
-                    ]
+                    ],
+                    "properties": {
+                        "allow": true
+                    }
                 }
             ]
         },
         {
+            "type": "Microsoft.Web/serverfarms",
             "apiVersion": "2018-11-01",
             "name": "[parameters('hostingPlanName')]",
-            "type": "Microsoft.Web/serverfarms",
             "location": "[parameters('location')]",
-            "kind": "",
-            "tags": {},
             "dependsOn": [],
+            "tags": {},
+            "sku": {
+                "Tier": "[parameters('sku')]",
+                "Name": "[parameters('skuCode')]"
+            },
+            "kind": "",
             "properties": {
                 "name": "[parameters('hostingPlanName')]",
                 "workerSize": "[parameters('workerSize')]",
                 "workerSizeId": "[parameters('workerSizeId')]",
                 "numberOfWorkers": "[parameters('numberOfWorkers')]"
-            },
-            "sku": {
-                "Tier": "[parameters('sku')]",
-                "Name": "[parameters('skuCode')]"
             }
         },
         {
-            "apiVersion": "2020-02-02-preview",
-            "name": "DACR-FunctionTrigger",
             "type": "microsoft.insights/components",
-            "location": "eastus",
-            "tags": {},
+            "apiVersion": "2020-02-02-preview",
+            "name": "[parameters('name')]",
+            "location": "[variables('locationLower')]",
             "dependsOn": [
                 "newWorkspaceTemplate"
             ],
+            "tags": {},
             "properties": {
                 "ApplicationId": "[parameters('name')]",
                 "Request_Source": "IbizaWebAppExtensionCreate",
                 "Flow_Type": "Redfield",
                 "Application_Type": "web",
-                "WorkspaceResourceId": "/subscriptions/1dba5540-2771-4f4f-9434-9f0150a9c88f/resourceGroups/DefaultResourceGroup-EUS/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-1dba5540-2771-4f4f-9434-9f0150a9c88f-EUS"
+                "WorkspaceResourceId": "[concat('/subscriptions/970fcef5-9c23-4f7d-a11b-5a96d104f066/resourceGroups/', parameters('resourceGroup') ,'/providers/Microsoft.OperationalInsights/workspaces/', parameters('WorkSpaceName'))]"
             }
         },
         {
-            "apiVersion": "2022-05-01",
             "type": "Microsoft.Storage/storageAccounts",
-            "name": "[parameters('storageAccountName')]",
-            "dependsOn": [],
+            "apiVersion": "2022-05-01",
+            "name": "[variables('storageAccountName')]",
             "location": "[parameters('location')]",
+            "dependsOn": [],
             "tags": {},
             "sku": {
                 "name": "Standard_LRS"
@@ -189,16 +192,15 @@
             "properties": {
                 "supportsHttpsTrafficOnly": true,
                 "minimumTlsVersion": "TLS1_2",
-                "defaultToOAuthAuthentication": true,
-                "allowBlobPublicAccess": false
+                "defaultToOAuthAuthentication": true
             }
         },
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
             "name": "newWorkspaceTemplate",
-            "resourceGroup": "DefaultResourceGroup-EUS",
             "subscriptionId": "[parameters('subscriptionId')]",
+            "resourceGroup": "[parameters('resourceGroup')]",
             "properties": {
                 "mode": "Incremental",
                 "template": {
@@ -209,14 +211,15 @@
                     "resources": [
                         {
                             "apiVersion": "2020-08-01",
-                            "name": "DefaultWorkspace-1dba5540-2771-4f4f-9434-9f0150a9c88f-EUS",
+                            "name": "[parameters('WorkSpaceName')]",
                             "type": "Microsoft.OperationalInsights/workspaces",
-                            "location": "eastus",
+                            "location": "[variables('locationLower')]",
                             "properties": {}
                         }
                     ]
                 }
             }
+
         }
     ]
 }

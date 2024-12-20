@@ -3,19 +3,25 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "subscriptionId": {
-            "value": "1dba5540-2771-4f4f-9434-9f0150a9c88f"
+            "value": "970fcef5-9c23-4f7d-a11b-5a96d104f066"
         },
         "name": {
-            "value": "DACR-FunctionTrigger"
+            "value": "DACR-functionTrigger"
+        },
+        "resourceGroup": {
+            "value": "DACR-RG"
         },
         "location": {
             "value": "Canada Central"
         },
+        "use32BitWorkerProcess": {
+            "value": false
+        },
         "ftpsState": {
             "value": "FtpsOnly"
         },
-        "storageAccountName": {
-            "value": "DACR-RG"
+        "netFrameworkVersion": {
+            "value": "v8.0"
         },
         "sku": {
             "value": "Dynamic"
@@ -32,20 +38,14 @@
         "numberOfWorkers": {
             "value": "1"
         },
-        "use32BitWorkerProcess": {
-            "value": false
-        },
-        "netFrameworkVersion": {
-            "value": "v8.0"
-        },
         "hostingPlanName": {
             "value": "ASP-DACRRG-b369"
         },
-        "serverFarmResourceGroup": {
-            "value": "DACR-RG"
-        },
         "alwaysOn": {
             "value": false
+        },
+        "WorkSpaceName": {
+            "value": "DefaultWorkSpace"
         }
     }
 }
