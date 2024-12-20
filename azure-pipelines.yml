@@ -11,7 +11,7 @@ steps:
     subscriptionId: '1dba5540-2771-4f4f-9434-9f0150a9c88f'
     action: 'Create Or Update Resource Group'
     resourceGroupName: 'DACR-RG'
-    location: 'East US'
+    location: 'Canada Central'
     templateLocation: 'Linked artifact'
     csmFile: '$(Build.SourcesDirectory)\AzureTP2\azuredeploy.json'
     csmParametersFile: '$(Build.SourcesDirectory)\AzureTP2\azuredeploy.parameters.json'
