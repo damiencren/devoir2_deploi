@@ -1,0 +1,54 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "storageConnectionString": {
+            "value": "[parameters('storageConnectionString')]"
+        },
+        "subscriptionId": {
+            "value": "1dba5540-2771-4f4f-9434-9f0150a9c88f"
+        },
+        "name": {
+            "value": "DACR-FunctionTrigger"
+        },
+        "location": {
+            "value": "Canada Central"
+        },
+        "ftpsState": {
+            "value": "FtpsOnly"
+        },
+        "storageAccountName": {
+            "value": "dcrenstorageaccount"
+        },
+        "sku": {
+            "value": "Dynamic"
+        },
+        "skuCode": {
+            "value": "Y1"
+        },
+        "workerSize": {
+            "value": "0"
+        },
+        "workerSizeId": {
+            "value": "0"
+        },
+        "numberOfWorkers": {
+            "value": "1"
+        },
+        "use32BitWorkerProcess": {
+            "value": false
+        },
+        "netFrameworkVersion": {
+            "value": "v8.0"
+        },
+        "hostingPlanName": {
+            "value": "ASP-DACRRG-9426"
+        },
+        "serverFarmResourceGroup": {
+            "value": "DACR-RG"
+        },
+        "alwaysOn": {
+            "value": false
+        }
+    }
+}

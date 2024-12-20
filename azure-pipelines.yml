@@ -1,0 +1,93 @@
+#trigger:
+#- master
+
+pool: "default"
+
+steps:
+- task: AzureResourceManagerTemplateDeployment@3
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: 'Azure subscription 1(1dba5540-2771-4f4f-9434-9f0150a9c88f)'
+    subscriptionId: '1dba5540-2771-4f4f-9434-9f0150a9c88f'
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: 'DACR-RG'
+    location: 'East US'
+    templateLocation: 'Linked artifact'
+    csmFile: '$(Build.SourcesDirectory)\AzureTP2\azuredeploy.json'
+    csmParametersFile: '$(Build.SourcesDirectory)\AzureTP2\azuredeploy.parameters.json'
+    deploymentMode: 'Incremental'
+
+
+- task: PowerShell@2
+  displayName: 'Retrieve and Store Storage Account Connection String'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $connectionString = az storage account show-connection-string --name dcrenstorageaccount --resource-group DACR-RG --query connectionString --output tsv
+      Write-Host "##vso[task.setvariable variable=storageConnectionString]$connectionString"
+      Write-Host "Storage Connection String: $connectionString"
+
+- script: dir "$(Build.SourcesDirectory)\AzureTP2"
+  displayName: 'List files in AzureTP2 folder'
+
+# Deploy le Azure Function
+- task: AzureResourceManagerTemplateDeployment@3
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: 'Azure subscription 1(1dba5540-2771-4f4f-9434-9f0150a9c88f)'
+    subscriptionId: '1dba5540-2771-4f4f-9434-9f0150a9c88f'
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: 'DACR-RG'
+    location: 'East US'
+    templateLocation: 'Linked artifact'
+    csmFile: '$(Build.SourcesDirectory)\AzureTP2\azuredeployFunctionTrigger.json'
+    csmParametersFile: '$(Build.SourcesDirectory)\AzureTP2\azuredeployFunctionTrigger.parameters.json'
+    deploymentMode: 'Incremental'
+    overrideParameters: >
+      storageConnectionString  "$(storageConnectionString )"
+
+- task: AzureCLI@2
+  displayName: 'Configurer les variables d’application'
+  inputs:
+    azureSubscription: 'Azure subscription 1(1dba5540-2771-4f4f-9434-9f0150a9c88f)'
+    scriptType: 'ps'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az functionapp config appsettings set `
+        --resource-group 'DACR-RG' `
+        --name 'DACR-FunctionTrigger' `
+        --settings storageConnectionString=$(storageConnectionString)
+                   #AzureWebJobsStorage=$(AzureWebJobsStorage) `
+
+# Étape 7 : Installer le SDK .NET 8.x
+- task: UseDotNet@2
+  displayName: 'Installer .NET SDK 8.x'
+  inputs:
+    packageType: 'sdk'
+    version: '8.0.100'
+
+# Étape 8 : Restaurer les dépendances
+- script: |
+    dotnet restore
+  workingDirectory: './azure-functions'
+  displayName: 'Restaurer les dépendances'
+
+# Étape 9 : Compiler le projet
+- script: |
+    dotnet build -c Release
+  workingDirectory: './azure-functions'
+  displayName: 'Compiler le projet'
+
+# Étape 10 : Publier le projet
+- script: |
+    dotnet publish -c Release -o ./publishs
+  workingDirectory: './azure-functions'
+  displayName: 'Publier le projet'
+
+# Étape 11 : Déployer les fonctions dans la Function App
+- task: AzureFunctionApp@1
+  inputs:
+    azureSubscription: 'Azure subscription 1(1dba5540-2771-4f4f-9434-9f0150a9c88f)'
+    appType: 'functionApp'
+    appName: 'DACR-FunctionTrigger'
+    package: '$(System.DefaultWorkingDirectory)/azure-functions/publishs'

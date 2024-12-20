@@ -166,6 +166,39 @@
                 "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]",
                 "[concat(concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName')), '/blobServices/default')]"
             ]
+        },
+        {
+            "name": "[concat(parameters('storageAccountName'), '/default/input-images')]",
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2023-05-01",
+            "properties": {
+                "publicAccess": "None"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]",
+                "[concat(concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName')), '/blobServices/default')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('storageAccountName'), '/default/processed-images')]",
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2023-05-01",
+            "properties": {
+                "publicAccess": "None"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]",
+                "[concat(concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName')), '/blobServices/default')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('storageAccountName'), '/default/queue')]",
+            "type": "Microsoft.Storage/storageAccounts/queues",
+            "apiVersion": "2023-05-01",
+            "properties": {},
+            "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]"
+            ]
         }
     ],
     "outputs": {}

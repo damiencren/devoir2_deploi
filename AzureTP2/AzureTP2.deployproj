@@ -25,10 +25,13 @@
   <ItemGroup>
     <Content Include="azuredeploy.json" />
     <Content Include="azuredeploy.parameters.json" />
+    <None Include="azuredeployFunctionTrigger.parameters.json" />
+    <None Include="azuredeployFunctionTrigger.json" />
     <None Include="Deployment.targets">
       <Visible>False</Visible>
     </None>
     <Content Include="Deploy-AzureResourceGroup.ps1" />
+    <None Include="azure-functions\FunctionTrigger.cs" />
   </ItemGroup>
   <Target Name="GetReferenceAssemblyPaths" />
 </Project>
