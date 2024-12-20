@@ -200,7 +200,6 @@
                 "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]"
             ]
         }
-
     ],
     "outputs": {}
 }
