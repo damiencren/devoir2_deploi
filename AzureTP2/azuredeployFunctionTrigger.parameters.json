@@ -1,52 +1,51 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-    // URL du schéma JSON pour valider la structure de ce fichier de paramètres ARM
-
     "contentVersion": "1.0.0.0",
-    // Version du contenu pour le contrôle des versions de ce fichier
-
     "parameters": {
-        // Paramètres et leurs valeurs spécifiques pour le déploiement
-
         "subscriptionId": {
             "value": "1dba5540-2771-4f4f-9434-9f0150a9c88f"
-            // ID de la souscription Azure où les ressources seront déployées
         },
         "name": {
-            "value": "DACR-AppFunctions"
-            // Nom de l'application Azure Functions
+            "value": "DACR-FunctionApp"
         },
         "location": {
-            "value": "canadacentral"
-            // Région Azure où les ressources seront déployées (Canada Central)
+            "value": "Canada East"
+        },
+        "ftpsState": {
+            "value": "FtpsOnly"
         },
         "storageAccountName": {
             "value": "dcrenstorageaccount"
-            // Nom du compte de stockage Azure
-        },
-        "containerName": {
-            "value": "input-images"
-            // Nom du conteneur Blob à créer dans le compte de stockage
-        },
-        "serviceBusConnectionString": {
-            "value": "[reference(resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', 'AzureBus-TMEB', 'RootManageSharedAccessKey'), '2017-04-01').primaryConnectionString]"
-            // Chaîne de connexion primaire pour Azure Service Bus, récupérée dynamiquement via une référence
         },
         "sku": {
             "value": "Dynamic"
-            // Type de tarification pour le plan d'hébergement (Dynamic pour le modèle consommateur)
         },
         "skuCode": {
             "value": "Y1"
-            // Code SKU associé à la tarification Dynamic (Y1 pour le consommateur)
+        },
+        "workerSize": {
+            "value": "0"
+        },
+        "workerSizeId": {
+            "value": "0"
+        },
+        "numberOfWorkers": {
+            "value": "1"
+        },
+        "use32BitWorkerProcess": {
+            "value": false
+        },
+        "netFrameworkVersion": {
+            "value": "v8.0"
         },
         "hostingPlanName": {
-            "value": "ASP-Projet2-8acc"
-            // Nom du plan d'hébergement (App Service Plan) pour Azure Functions
+            "value": "ASP-DACRRG-b2da"
         },
         "serverFarmResourceGroup": {
             "value": "DACR-RG"
-            // Nom du groupe de ressources où le plan d'hébergement est défini
+        },
+        "alwaysOn": {
+            "value": false
         }
     }
 }
