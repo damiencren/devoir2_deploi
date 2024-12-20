@@ -9,13 +9,13 @@
             "value": "DACR-FunctionTrigger"
         },
         "location": {
-            "value": "Canada Central"
+            "value": "East US"
         },
         "ftpsState": {
             "value": "FtpsOnly"
         },
         "storageAccountName": {
-            "value": "dcrenstorageaccount"
+            "value": "dacrrg944f"
         },
         "sku": {
             "value": "Dynamic"
@@ -39,7 +39,7 @@
             "value": "v8.0"
         },
         "hostingPlanName": {
-            "value": "ASP-DACRRG-9426"
+            "value": "ASP-DACRRG-b369"
         },
         "serverFarmResourceGroup": {
             "value": "DACR-RG"
